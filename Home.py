@@ -4,6 +4,13 @@ from flask import Flask, render_template,json, request, redirect, url_for
 # from flask.ext.mysql import MySQL
 from flaskext.mysql import MySQL
 
+CURRENT_USER = None
+
+class User(object):
+    def __init__(self, email, name, pwd):
+        self.email = email
+        self.name = name
+        self.pwd = pwd
 
 
 app = Flask(__name__)
@@ -57,6 +64,7 @@ def showSignIn():
 
 @app.route('/signIn', methods=['POST'])
 def signIn():
+    global CURRENT_USER
     _email = request.form['inputEmail']
     _password = request.form['inputPassword']
 
@@ -64,15 +72,22 @@ def signIn():
         conn = mysql.connect()
         cursor = conn.cursor()
         cursor.execute('SELECT * from `tbl_user` WHERE user_username="%s" AND user_password="%s";' %(_email, _password))
+        name = cursor.execute('SELECT user_name from `tbl_user` WHERE user_username="%s"' %_email)
+        CURRENT_USER = User(_email, name, _password)
         row_count = cursor.rowcount
         if row_count == 1:
+
             return json.dumps({'message': 'ok worked'})
         else:
             return json.dumps({'message':'uhhh either 0 or more than one account like this'})
 
 @app.route('/profile')
+@app.route('/profile/<email>')
 def showProfile():
-    return render_template('profile.html')
+    if CURRENT_USER == None:
+        return render_template('profile.html')
+    else:
+        return render_template('profile.html', user=CURRENT_USER.email)
 
 
 
