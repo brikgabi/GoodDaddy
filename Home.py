@@ -15,6 +15,9 @@ app.config['MYSQL_DATABASE_DB'] = 'BucketList'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 
+@app.route("/home")
+def home():
+    return render_template('index.html')
 
 @app.route("/")
 def main():
@@ -23,6 +26,7 @@ def main():
 @app.route("/showSignUp")
 def showSignUp():
     return render_template('signup.html')
+
 
 @app.route('/signUp', methods=['POST'])
 def signUp():
