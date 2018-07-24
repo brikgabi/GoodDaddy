@@ -64,7 +64,7 @@ ul li a {
 	text-decoration: none;
 }
 ul li:hover a {
-	color: #2C9AB7;
+	color: black;
 }
 .hero_header {
 	color: #FFFFFF;
@@ -182,6 +182,7 @@ ul li:hover a {
 }
 /* More info */
 footer {
+    width: 100%
 	background-color: #FFFFFF;
 	padding-bottom: 35px;
 }
@@ -206,6 +207,7 @@ footer .footer_column p {
 	max-height: 200px;
 }
 footer .footer_column p {
+    width: 100%
 	padding-left: 30px;
 	padding-right: 30px;
 	text-align: justify;
@@ -234,6 +236,33 @@ footer .footer_column p {
 	color: #FFFFFF;
 	transition: all 0.3s linear;
 }
+
+.buttonApply {
+        width: 100px;
+    	margin-top: 40px;
+    	margin-right: auto;
+    	margin-bottom: auto;
+    	margin-left: auto;
+    	padding-top: 20px;
+    	padding-right: 10px;
+    	padding-bottom: 20px;
+    	padding-left: 10px;
+    	text-align: center;
+    	vertical-align: middle;
+    	border-radius: 0px;
+    	text-transform: uppercase;
+    	font-weight: bold;
+    	letter-spacing: 2px;
+    	border: 3px solid #FFFFFF;
+    	color: #4AA24C;
+    	transition: all 0.3s linear;
+}
+.buttonApply:hover {
+    background-color: #FEFEFE;
+    	color: #C4C4C4;
+    	cursor: pointer;
+}
+
 .button:hover {
 	background-color: #FEFEFE;
 	color: #C4C4C4;
