@@ -1,6 +1,6 @@
 
 # hello world!!
-from flask import Flask, render_template,json, request
+from flask import Flask, render_template,json, request, redirect, url_for
 # from flask.ext.mysql import MySQL
 from flaskext.mysql import MySQL
 
@@ -48,6 +48,28 @@ def signUp():
     else:
         return json.dumps({'html':'<span>Enter the required fields</span>'})
 
+@app.route('/showSignIn')
+def showSignIn():
+    return render_template('signin.html')
+
+@app.route('/signIn', methods=['POST'])
+def signIn():
+    _email = request.form['inputEmail']
+    _password = request.form['inputPassword']
+
+    if _email and _password:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * from `tbl_user` WHERE user_username="%s" AND user_password="%s";' %(_email, _password))
+        row_count = cursor.rowcount
+        if row_count == 1:
+            return json.dumps({'message': 'ok worked'})
+        else:
+            return json.dumps({'message':'uhhh either 0 or more than one account like this'})
+
+@app.route('/profile')
+def showProfile():
+    return render_template('profile.html')
 
 
 
