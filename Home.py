@@ -23,8 +23,13 @@ app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 
 @app.route("/home")
+@app.route("/home/<user>")
 def home():
-    return render_template('index.html')
+    if CURRENT_USER == None:
+        return render_template('index.html')
+    else:
+        return render_template('index.html', user = CURRENT_USER.name)
+
 
 @app.route("/")
 def main():
@@ -74,23 +79,23 @@ def signIn():
     if _email and _password:
         conn = mysql.connect()
         cursor = conn.cursor()
-        cursor.execute('SELECT * from `tbl_USERS` WHERE email="%s" AND password="%s";' %(_email, _password))
-        name = cursor.execute('SELECT first_name from `tbl_USERS` WHERE email="%s"' %_email)
+        cursor.execute('SELECT first_name from `tbl_USERS` WHERE email="%s" AND password="%s";' %(_email, _password))
+        name = cursor.fetchone()
+        name = name[0].encode('ascii', 'ignore')
         CURRENT_USER = User(_email, name, _password)
         row_count = cursor.rowcount
         if row_count == 1:
-
             return json.dumps({'message': 'ok worked'})
         else:
             return json.dumps({'message':'uhhh either 0 or more than one account like this'})
 
 @app.route('/profile')
-@app.route('/profile/<email>')
+@app.route('/profile/<user>')
 def showProfile():
     if CURRENT_USER == None:
         return render_template('profile.html')
     else:
-        return render_template('profile.html', user=CURRENT_USER.email)
+        return render_template('profile.html', user=CURRENT_USER.name)
 
 
 
