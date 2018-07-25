@@ -7,12 +7,14 @@ from flaskext.mysql import MySQL
 CURRENT_USER = None
 
 class User(object):
-    def __init__(self, email, name, pwd):
+    def __init__(self, first_name, last_name, startup_name, website, email, password):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.startup_name = startup_name
+        self.website = website
         self.email = email
-        self.name = name
-        self.pwd = pwd
-
-
+        self.password = password
+    
 app = Flask(__name__)
 mysql = MySQL()
 
@@ -28,7 +30,7 @@ def home():
     if CURRENT_USER == None:
         return render_template('index.html')
     else:
-        return render_template('index.html', user = CURRENT_USER.name)
+        return render_template('index.html', user = CURRENT_USER.first_name)
 
 
 @app.route("/")
@@ -79,10 +81,13 @@ def signIn():
     if _email and _password:
         conn = mysql.connect()
         cursor = conn.cursor()
-        cursor.execute('SELECT first_name from `tbl_USERS` WHERE email="%s" AND password="%s";' %(_email, _password))
-        name = cursor.fetchone()
-        name = name[0].encode('ascii', 'ignore')
-        CURRENT_USER = User(_email, name, _password)
+        cursor.execute('SELECT first_name, last_name, startup_name, website from `tbl_USERS` WHERE email="%s" AND password="%s";' %(_email, _password))
+        row = cursor.fetchone()
+        first_name = row[0].encode('ascii', 'ignore')
+        last_name = row[1].encode('ascii', 'ignore')
+        startup_name = row[2].encode('ascii', 'ignore')
+        website = row[3].encode('ascii', 'ignore')
+        CURRENT_USER = User(first_name, last_name, startup_name, website, _email, _password)
         row_count = cursor.rowcount
         if row_count == 1:
             return json.dumps({'message': 'ok worked'})
@@ -95,7 +100,7 @@ def showProfile():
     if CURRENT_USER == None:
         return render_template('profile.html')
     else:
-        return render_template('profile.html', user=CURRENT_USER.name)
+        return render_template('profile.html', user=CURRENT_USER.first_name)
 
 
 
