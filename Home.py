@@ -8,13 +8,13 @@ CURRENT_USER = None
 CURRENT_MATCH = None
 
 class User(object):
-    def __init__(self, first_name, last_name, startup_name, website, email, password):
+    def __init__(self, first_name, last_name, startup_name, website, email):
         self.first_name = first_name
         self.last_name = last_name
         self.startup_name = startup_name
         self.website = website
         self.email = email
-        self.password = password
+
     
 app = Flask(__name__)
 mysql = MySQL()
@@ -69,7 +69,7 @@ def signUp():
             last_name = row[1].encode('ascii', 'ignore')
             startup_name = row[2].encode('ascii', 'ignore')
             website = row[3].encode('ascii', 'ignore')
-            CURRENT_USER = User(first_name, last_name, startup_name, website, _email, _password)
+            CURRENT_USER = User(first_name, last_name, startup_name, website, _email)
 
             cursor.execute('SELECT first_name, last_name, startup_name, website, email from `tbl_USERS` WHERE email<>"%s";' %_email)
             row2 = cursor.fetchone()
@@ -78,7 +78,7 @@ def signUp():
             startup_name = row2[2].encode('ascii', 'ignore')
             website = row2[3].encode('ascii', 'ignore')
             email2 = row2[4].encode('ascii', 'ignore')
-            CURRENT_MATCH = User(first_name, last_name, startup_name, website, email2, _password)
+            CURRENT_MATCH = User(first_name, last_name, startup_name, website, email2)
 
         data = cursor.fetchall()
 
@@ -93,6 +93,24 @@ def signUp():
 @app.route('/showSignIn')
 def showSignIn():
     return render_template('signin.html')
+
+@app.route('/rand-uhm')
+def randomMatch():
+    global CURRENT_MATCH
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    cursor.execute('SELECT first_name, last_name, startup_name, website, email from `tbl_USERS` WHERE email<>"%s" ORDER BY RAND() LIMIT 1;' %CURRENT_USER.email)
+    row2 = cursor.fetchone()
+    first_name = row2[0].encode('ascii', 'ignore')
+    last_name = row2[1].encode('ascii', 'ignore')
+    startup_name = row2[2].encode('ascii', 'ignore')
+    website = row2[3].encode('ascii', 'ignore')
+    email2 = row2[4].encode('ascii', 'ignore')
+    CURRENT_MATCH = User(first_name, last_name, startup_name, website, email2)
+    return render_template('profile.html', user=CURRENT_USER.first_name, matchFName=CURRENT_MATCH.first_name,
+                    matchLName=CURRENT_MATCH.last_name, matchWebsite=CURRENT_MATCH.website,
+                    matchEmail= CURRENT_MATCH.email, matchStartup= CURRENT_MATCH.startup_name)
+
 
 @app.route('/signIn', methods=['POST'])
 def signIn():
@@ -111,17 +129,17 @@ def signIn():
             last_name = row[1].encode('ascii', 'ignore')
             startup_name = row[2].encode('ascii', 'ignore')
             website = row[3].encode('ascii', 'ignore')
-            CURRENT_USER = User(first_name, last_name, startup_name, website, _email, _password)
+            CURRENT_USER = User(first_name, last_name, startup_name, website, _email)
             row_count = cursor.rowcount
 
-            cursor.execute('SELECT first_name, last_name, startup_name, website, email from `tbl_USERS` WHERE email<>"%s";' %_email)
+            cursor.execute('SELECT first_name, last_name, startup_name, website, email from `tbl_USERS` WHERE email<>"%s" ORDER BY RAND() LIMIT 1;' %_email)
             row2 = cursor.fetchone()
             first_name = row2[0].encode('ascii', 'ignore')
             last_name = row2[1].encode('ascii', 'ignore')
             startup_name = row2[2].encode('ascii', 'ignore')
             website = row2[3].encode('ascii', 'ignore')
             email2 = row2[4].encode('ascii', 'ignore')
-            CURRENT_MATCH = User(first_name, last_name, startup_name, website, email2, _password)
+            CURRENT_MATCH = User(first_name, last_name, startup_name, website, email2)
         if row_count == 1:
             return json.dumps({'message': 'ok worked'})
         else:
