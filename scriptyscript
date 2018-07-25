@@ -1,0 +1,21 @@
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_addUsers`(
+    IN p_first_name VARCHAR(45),
+    IN p_last_name VARCHAR(20),
+    IN p_startup_name VARCHAR(20),
+    IN p_website VARCHAR(45),
+    IN p_email VARCHAR(25),
+    IN p_password VARCHAR(20)
+)
+BEGIN
+    if ( select exists (select 1 from tbl_USERS where email = p_email) ) THEN
+     
+        select 'Email Exists !!';
+     
+    ELSE
+     
+        INSERT INTO tbl_USERS (first_name, last_name, startup_name, website, email, password) VALUES (p_first_name, p_last_name, p_startup_name, p_website, p_email, p_password);
+     
+    END IF;
+END$$
+DELIMITER ;
