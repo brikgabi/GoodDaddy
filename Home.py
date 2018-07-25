@@ -5,6 +5,7 @@ from flask import Flask, render_template,json, request, redirect, url_for
 from flaskext.mysql import MySQL
 
 CURRENT_USER = None
+CURRENT_MATCH = None
 
 class User(object):
     def __init__(self, email, name, pwd):
@@ -88,6 +89,7 @@ def signIn():
             return json.dumps({'message': 'ok worked'})
         else:
             return json.dumps({'message':'uhhh either 0 or more than one account like this'})
+
 
 @app.route('/profile')
 @app.route('/profile/<user>')
