@@ -28,7 +28,11 @@
     <header style="background:#4AA24C">
         <nav>
             <ul>
+                {% if user %}
+                <li><a href="profile">MY ACCOUNT</a> </li>
+                {% else %}
                 <li><a href="showSignIn">SIGN IN</a></li>
+                {% endif %}
                 <li><a href="#about">ABOUT</a></li>
                 <li> <a href="showSignUp">APPLY</a></li>
             </ul>
