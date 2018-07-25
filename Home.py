@@ -34,10 +34,6 @@ def main():
 def showSignUp():
     return render_template('signup.html')
 
-@app.route("/signIn")
-def signIn():
-    return render_template("profile.html")
-
 @app.route('/signUp', methods=['POST'])
 def signUp():
     #wassuupppp
