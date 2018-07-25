@@ -38,14 +38,18 @@ def showSignUp():
 def signUp():
     #wassuupppp
 
-    _name = request.form['inputName']
+    _first_name = request.form['inputFName']
+    _last_name = request.form['inputLName']
+    _startup = request.form['inputStartup']
+    _website = request.form['inputWebsite']
     _email = request.form['inputEmail']
     _password = request.form['inputPassword']
 
-    if _name and _email and _password:
+
+    if _first_name and _last_name and _startup and _email and _password:
         conn = mysql.connect()
         cursor = conn.cursor()
-        cursor.callproc('sp_createUser',(_name,_email,_password))
+        cursor.callproc('sp_addUsers',(_first_name, _last_name, _startup, _website, _email, _password))
 
         data = cursor.fetchall()
 
@@ -70,8 +74,8 @@ def signIn():
     if _email and _password:
         conn = mysql.connect()
         cursor = conn.cursor()
-        cursor.execute('SELECT * from `tbl_user` WHERE user_username="%s" AND user_password="%s";' %(_email, _password))
-        name = cursor.execute('SELECT user_name from `tbl_user` WHERE user_username="%s"' %_email)
+        cursor.execute('SELECT * from `tbl_USERS` WHERE email="%s" AND password="%s";' %(_email, _password))
+        name = cursor.execute('SELECT first_name from `tbl_USERS` WHERE email="%s"' %_email)
         CURRENT_USER = User(_email, name, _password)
         row_count = cursor.rowcount
         if row_count == 1:
