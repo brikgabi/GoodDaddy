@@ -26,10 +26,12 @@
 <div class="container">
     <!-- Navigation -->
 
-    {% if user %}
-    <h1>Welcome {{ user }}!</h1>
-    {% endif %}
     <header style="background:#4AA24C"> <a href="">
+    {% if user %}
+        <a href="">
+            <h4 style="width:30%"class="logo">Welcome {{ user }}!</h4>
+        </a>
+    {% endif %}
     </a>
         <nav>
             <ul>
