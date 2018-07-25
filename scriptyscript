@@ -1,3 +1,14 @@
+CREATE TABLE `BucketList`.`tbl_USERS` (
+ `user_id` BIGINT NOT NULL AUTO_INCREMENT,
+ `first_name` VARCHAR(20) NOT NULL,
+ `last_name` VARCHAR(20) NOT NULL,
+ `startup_name` VARCHAR(45) NOT NULL,
+ `website` VARCHAR(45) NULL,
+ `email` VARCHAR(25) NOT NULL,
+ `password` VARCHAR(20) NOT NULL,
+PRIMARY KEY (`user_id`));
+
+
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_addUsers`(
     IN p_first_name VARCHAR(45),
@@ -19,3 +30,4 @@ BEGIN
     END IF;
 END$$
 DELIMITER ;
+
