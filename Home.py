@@ -55,9 +55,30 @@ def signUp():
 
 
     if _first_name and _last_name and _startup and _email and _password:
+        global CURRENT_USER, CURRENT_MATCH
         conn = mysql.connect()
         cursor = conn.cursor()
         cursor.callproc('sp_addUsers',(_first_name, _last_name, _startup, _website, _email, _password))
+
+        cursor.execute('SELECT first_name, last_name, startup_name, website from `tbl_USERS` WHERE email="%s" AND password="%s";' %(_email, _password))
+        row = cursor.fetchone()
+        row_count = cursor.rowcount
+
+        if row_count == 1:
+            first_name = row[0].encode('ascii', 'ignore')
+            last_name = row[1].encode('ascii', 'ignore')
+            startup_name = row[2].encode('ascii', 'ignore')
+            website = row[3].encode('ascii', 'ignore')
+            CURRENT_USER = User(first_name, last_name, startup_name, website, _email, _password)
+
+            cursor.execute('SELECT first_name, last_name, startup_name, website, email from `tbl_USERS` WHERE email<>"%s";' %_email)
+            row2 = cursor.fetchone()
+            first_name = row2[0].encode('ascii', 'ignore')
+            last_name = row2[1].encode('ascii', 'ignore')
+            startup_name = row2[2].encode('ascii', 'ignore')
+            website = row2[3].encode('ascii', 'ignore')
+            email2 = row2[4].encode('ascii', 'ignore')
+            CURRENT_MATCH = User(first_name, last_name, startup_name, website, email2, _password)
 
         data = cursor.fetchall()
 
@@ -75,7 +96,7 @@ def showSignIn():
 
 @app.route('/signIn', methods=['POST'])
 def signIn():
-    global CURRENT_USER
+    global CURRENT_USER, CURRENT_MATCH
     _email = request.form['inputEmail']
     _password = request.form['inputPassword']
 
@@ -84,12 +105,23 @@ def signIn():
         cursor = conn.cursor()
         cursor.execute('SELECT first_name, last_name, startup_name, website from `tbl_USERS` WHERE email="%s" AND password="%s";' %(_email, _password))
         row = cursor.fetchone()
-        first_name = row[0].encode('ascii', 'ignore')
-        last_name = row[1].encode('ascii', 'ignore')
-        startup_name = row[2].encode('ascii', 'ignore')
-        website = row[3].encode('ascii', 'ignore')
-        CURRENT_USER = User(first_name, last_name, startup_name, website, _email, _password)
         row_count = cursor.rowcount
+        if row_count == 1:
+            first_name = row[0].encode('ascii', 'ignore')
+            last_name = row[1].encode('ascii', 'ignore')
+            startup_name = row[2].encode('ascii', 'ignore')
+            website = row[3].encode('ascii', 'ignore')
+            CURRENT_USER = User(first_name, last_name, startup_name, website, _email, _password)
+            row_count = cursor.rowcount
+
+            cursor.execute('SELECT first_name, last_name, startup_name, website, email from `tbl_USERS` WHERE email<>"%s";' %_email)
+            row2 = cursor.fetchone()
+            first_name = row2[0].encode('ascii', 'ignore')
+            last_name = row2[1].encode('ascii', 'ignore')
+            startup_name = row2[2].encode('ascii', 'ignore')
+            website = row2[3].encode('ascii', 'ignore')
+            email2 = row2[4].encode('ascii', 'ignore')
+            CURRENT_MATCH = User(first_name, last_name, startup_name, website, email2, _password)
         if row_count == 1:
             return json.dumps({'message': 'ok worked'})
         else:
@@ -99,10 +131,12 @@ def signIn():
 @app.route('/profile')
 @app.route('/profile/<user>')
 def showProfile():
-    if CURRENT_USER == None:
-        return render_template('profile.html')
+    if CURRENT_USER != None:
+        return render_template('profile.html', user=CURRENT_USER.first_name, matchFName=CURRENT_MATCH.first_name,
+                                matchLName=CURRENT_MATCH.last_name, matchWebsite=CURRENT_MATCH.website,
+                               matchEmail= CURRENT_MATCH.email, matchStartup= CURRENT_MATCH.startup_name)
     else:
-        return render_template('profile.html', user=CURRENT_USER.first_name)
+        return render_template('profile.html')
 
 
 
